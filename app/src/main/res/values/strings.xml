@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">RemoteMonioringApp</string>
+
+
+    <string name="company_logo">Company Logo</string>
+
+
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in </string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+
+
+    <string name="register">REGISTER</string>
+    <string name="login_email_hint">Email</string>
+    <string name="login_password_hint">Password</string>
+    <string name="signup_login_hint">Already have an account? Sign In</string>
+    <string name="login_signup_hint">Don\'t have an account? Sign Up</string>
+    <string name="login">LOGIN</string>
+    <string name="signin_login_hint">No Account Yet? Register !</string>
+    <string name="login_confirm_password_hint">Confirm Password</string>
+
+    <string-array name="departments_array">
+        <item>Finance</item>
+        <item>Human Resource</item>
+        <item>ICT</item>
+        <item>Marketing</item>
+        <item>Sales</item>
+        <item>Production</item>
+        <item>Security</item>
+        <item>Logistics</item>
+    </string-array>
+
+    <!-- Firebase Database Nodes -->
+    <string name="dbnode_users">users</string>
+
+    <!-- Firebase Database Fields -->
+    <string name="field_email">email</string>
+    <string name="field_last_name">lastname</string>
+    <string name="field_first_name">firstname</string>
+    <string name="field_company">company</string>
+    <string name="field_user_id">user_id</string>
+
+
+
+    <string name="company_last_name">App</string>
+    <string name="company_first_name">Tasks</string>
+
+</resources>
+

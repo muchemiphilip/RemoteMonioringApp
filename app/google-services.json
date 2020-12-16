@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "614514695989",
+    "project_id": "tasksmonitoringapp",
+    "storage_bucket": "tasksmonitoringapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:614514695989:android:536d34dbe4b88f32a8367c",
+        "android_client_info": {
+          "package_name": "com.okotheffie.remotemonioringapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "614514695989-552es9pgl4mkh5hi1av5rfo60vecc9dg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-tbD9vTqs1wPyNbrpoyZDCPFFA3myzBQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "614514695989-552es9pgl4mkh5hi1av5rfo60vecc9dg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
