@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     style="@style/loginParent"
@@ -42,7 +41,6 @@
                 android:layout_marginRight="30dp"
                 android:layout_marginLeft="30dp">
 
-
                 <TextView
                     style="@style/headerText"
                     android:layout_gravity="center"
@@ -52,14 +50,6 @@
                     layout="@layout/layout_login"/>
 
             </LinearLayout>
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="30dp"
-                android:layout_marginLeft="10dp"
-                android:src="@android:drawable/ic_menu_close_clear_cancel" />
 
         </RelativeLayout>
 

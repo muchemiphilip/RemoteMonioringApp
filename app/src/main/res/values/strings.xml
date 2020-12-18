@@ -49,6 +49,9 @@
 
     <string name="company_last_name">App</string>
     <string name="company_first_name">Tasks</string>
+    <string name="resend_verification_email">Resend Verification Code</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
 
 </resources>
 

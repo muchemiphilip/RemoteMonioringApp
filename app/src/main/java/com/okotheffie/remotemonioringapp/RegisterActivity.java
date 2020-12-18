@@ -1,8 +1,5 @@
 package com.okotheffie.remotemonioringapp;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,23 +10,28 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
-import com.google.firebase.database.FirebaseDatabase;
-import com.okotheffie.remotemonioringapp.Models.User;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
     private static final String TAG = "RegisterActivity";
-
-    private final AppCompatActivity activity = RegisterActivity.this;
 
     private TextInputLayout textInputLayoutFirstName;
     private TextInputLayout textInputLayoutLastName;
@@ -50,7 +52,10 @@ public class RegisterActivity extends AppCompatActivity {
     private TextView mTextViewLoginLink;
     private ProgressBar mProgressBar;
 
+
     private FirebaseAuth mAuth;
+    FirebaseFirestore fstore;
+    private String userID;
 
     public static final int PASSWORD_LENGTH = 8;
 
@@ -62,17 +67,19 @@ public class RegisterActivity extends AppCompatActivity {
 
         initViews();
 
+        // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
         mRegister.setOnClickListener(v -> {
             Log.d(TAG, "onClick: attempting to register.");
 
-            if (!isEmpty(mEmail.getText().toString())
-                    && !isEmpty(mPassword.getText().toString())
-                    && !isEmpty(mConfirmPassword.getText().toString())) {
+            //check for null valued EditText fields
+            if (isEmpty(mEmail.getText().toString())
+                    && isEmpty(mPassword.getText().toString())
+                    && isEmpty(mConfirmPassword.getText().toString())) {
 
+                //check if passwords match
                 if (doStringsMatch(mPassword.getText().toString(), mConfirmPassword.getText().toString())) {
-
                     registerNewEmail(mEmail.getText().toString(), mPassword.getText().toString());
 
                 } else {
@@ -80,6 +87,18 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             } else {
                 Toast.makeText(RegisterActivity.this, "You must fill out all the fields", Toast.LENGTH_SHORT).show();
+            }
+        });
+        hideSoftKeyboard();
+
+        mTextViewLoginLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RegisterActivity.this, LoginAcivity.class);
+                startActivity(intent);
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+                emptyInputEditText();
+                finish();
             }
         });
     }
@@ -101,78 +120,96 @@ public class RegisterActivity extends AppCompatActivity {
         mConfirmPassword = findViewById(R.id.editText_confirmPassword);
         mRegister = findViewById(R.id.btn_login);
         mTextViewLoginLink = findViewById(R.id.txtView_registerLink);
+        mProgressBar = findViewById(R.id.progressBar);
+
 
     }
     public void registerNewEmail(final String email, String password){
 
         showDialog();
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete( Task<AuthResult> task) {
-                        Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
+                    if (task.isSuccessful()){
+                        Log.d(TAG, "onComplete: AuthState: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                        if (task.isSuccessful()){
-                            Log.d(TAG, "onComplete: AuthState: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        sendVerificationEmail();
 
-                            //sendVerificationEmail();
+                        // Create a User object
+                        userID = mAuth.getCurrentUser().getUid();
+                        FirebaseFirestore fstore = FirebaseFirestore.getInstance();
+                        DocumentReference documentReference = fstore.collection("users").document(userID);
 
-                            // Create a User object
-                            User user = new User();
-                            user.setFirstname(mFirstName.getText().toString().trim());
-                            user.setLastname(mLastName.getText().toString().trim());
-                            user.setEmail(mEmail.getText().toString().trim());
-                            user.setContactnumber(mContactNo.getText().toString().trim());
-                            user.setUsername(mUserName.getText().toString().trim());
-                            user.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        Map<String, Object> user = new HashMap<>();
+                        user.put("firstname",mFirstName.getText().toString().trim().toLowerCase());
+                        user.put("lastname",mLastName.getText().toString().trim().toLowerCase());
+                        user.put("email",FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                        user.put("contactnumber",mContactNo.getText().toString().toLowerCase());
+                        user.put("username",mUserName.getText().toString().toLowerCase());
+                        user.put("user_id",FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                            Log.d(TAG,"user: " + user.toString());
+                        documentReference.set(user).addOnSuccessListener(aVoid -> {
+                            Log.d(TAG, "onSuccess: user profile is created for" + userID);
+                            FirebaseAuth.getInstance().signOut();
+                            redirectLoginScreen();
 
-                            FirebaseDatabase.getInstance().getReference()
-                                    .child(getString(R.string.dbnode_users))
-                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                    .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    FirebaseAuth.getInstance().signOut();
-                                    redirectLoginScreen();
-                                    Toast.makeText(RegisterActivity.this, "Please confirm your Verification in your Email", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                        if (!task.isSuccessful()) {
-                            try{
-                                throw task.getException();
-                                //if user enters weak Password
-                            } catch (FirebaseAuthWeakPasswordException weakPassword) {
-                                Log.d(TAG,"onComplete: Weak Password");
-                                Toast.makeText(RegisterActivity.this, "Weak Password, Kindly try a Stronger Password", Toast.LENGTH_SHORT).show();
-
-                            } catch (FirebaseAuthInvalidCredentialsException malformedEmail) {
-                                Log.d(TAG,"onComplete: malformedEmail");
-                                Toast.makeText(RegisterActivity.this, "Malformed Email,The email you entered don't conform to a standard type ", Toast.LENGTH_SHORT).show();
-
-                            } catch (FirebaseAuthUserCollisionException existEmail) {
-                                Log.d(TAG,"onComplete: Email already Exists");
-                                Toast.makeText(RegisterActivity.this, "The email entered already exists ", Toast.LENGTH_SHORT).show();
-
-                            } catch (Exception e) {
-                                Log.d(TAG,"onComplete: " + e.getMessage());
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d(TAG, "onFailure: " + e.toString());
                             }
-                        }
-                        hideDialog();
-                        // ...
+                        });
                     }
+                    if (!task.isSuccessful()) {
+                        try{
+                            throw task.getException();
+                            //if user enters weak Password
+                        } catch (FirebaseAuthWeakPasswordException weakPassword) {
+                            Log.d(TAG,"onComplete: Weak Password");
+                            Toast.makeText(RegisterActivity.this, "Weak Password, Kindly try a Stronger Password", Toast.LENGTH_SHORT).show();
+
+                        } catch (FirebaseAuthInvalidCredentialsException malformedEmail) {
+                            Log.d(TAG,"onComplete: malformedEmail");
+                            Toast.makeText(RegisterActivity.this, "Malformed Email,The email you entered don't conform to a standard type ", Toast.LENGTH_SHORT).show();
+
+                        } catch (FirebaseAuthUserCollisionException existEmail) {
+                            Log.d(TAG,"onComplete: Email already Exists");
+                            Toast.makeText(RegisterActivity.this, "The email entered already exists ", Toast.LENGTH_SHORT).show();
+
+                        } catch (Exception e) {
+                            Log.d(TAG,"onComplete: " + e.getMessage());
+                        }
+                    }
+                    hideDialog();
                 });
     }
-    private void showDialog(){
-        mProgressBar.setVisibility(View.VISIBLE);
-    }
-    private void hideDialog(){
-        if(mProgressBar.getVisibility() == View.VISIBLE){
-            mProgressBar.setVisibility(View.INVISIBLE);
+    private void sendVerificationEmail(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null){
+            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()){
+                        Toast.makeText(RegisterActivity.this, "Sent Verification Email! Kindly Check your Email ",
+                                Toast.LENGTH_SHORT).show();
+                    }else {
+                        Toast.makeText(RegisterActivity.this, "Couldn't Send Verification Email",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
+    }
+    private void emptyInputEditText() {
+        mFirstName.setText(null);
+        mLastName.setText(null);
+        mEmail.setText(null);
+        mContactNo.setText(null);
+        mUserName.setText(null);
+        mPassword.setText(null);
+        mConfirmPassword.setText(null);
     }
     private void hideSoftKeyboard(){
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -181,7 +218,16 @@ public class RegisterActivity extends AppCompatActivity {
         return s1.equals(s2);
     }
     private boolean isEmpty(String string){
-        return string.equals("");
+        return !string.equals("");
+    }
+    private void showDialog(){
+        mProgressBar.setVisibility(View.VISIBLE);
+
+    }
+    private void hideDialog(){
+        if(mProgressBar.getVisibility() == View.VISIBLE){
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
     }
     public static boolean is_Letter(char ch) {
         ch = Character.toUpperCase(ch);
@@ -197,7 +243,7 @@ public class RegisterActivity extends AppCompatActivity {
         Intent intent = new Intent(RegisterActivity.this, LoginAcivity.class);
         startActivity(intent);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        //emptyInputEditText();
+        emptyInputEditText();
         finish();
     }
 }
