@@ -13,4 +13,10 @@
 
     <!--colros for card-->
     <color name="whiteCardColor">#fff</color>
+
+    <color name="milk_white">#fefcff</color>
+    <color name="company_color">#03A9F4</color>
+    <color name="slightly_gray">#ececec</color>
+
+
 </resources>

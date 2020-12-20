@@ -59,5 +59,9 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    //From Main activity
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+
 
 </resources>

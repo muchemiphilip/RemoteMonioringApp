@@ -24,27 +24,6 @@
     <string name="signin_login_hint">No Account Yet? Register !</string>
     <string name="login_confirm_password_hint">Confirm Password</string>
 
-    <string-array name="departments_array">
-        <item>Finance</item>
-        <item>Human Resource</item>
-        <item>ICT</item>
-        <item>Marketing</item>
-        <item>Sales</item>
-        <item>Production</item>
-        <item>Security</item>
-        <item>Logistics</item>
-    </string-array>
-
-    <!-- Firebase Database Nodes -->
-    <string name="dbnode_users">users</string>
-
-    <!-- Firebase Database Fields -->
-    <string name="field_email">email</string>
-    <string name="field_last_name">lastname</string>
-    <string name="field_first_name">firstname</string>
-    <string name="field_company">company</string>
-    <string name="field_user_id">user_id</string>
-
 
 
     <string name="company_last_name">App</string>
@@ -52,6 +31,14 @@
     <string name="resend_verification_email">Resend Verification Code</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
+    <string name="employee_dashboard">EMPLOYEE DASHBOARD</string>
+
+    <string name="default_time_of_day">Good Morning</string>
+    <string name="default_user_name">Effie Okoth</string>
+    <string name="tasks_to_complete">Tasks to complete</string>
+    <string name="home_tasks_option">Tasks</string>
+    <string name="view_task_arrow">View Task</string>
+    <string name="logout_off_app">Logout</string>
 
 </resources>
 
