@@ -24,7 +24,7 @@ public class GetStarted extends AppCompatActivity {
         startActivity(intent);
     }
     public void navigateToLoginAcivity(View view) {
-        Intent intent = new Intent(this,LoginAcivity.class);
+        Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
 }

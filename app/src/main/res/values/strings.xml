@@ -39,6 +39,15 @@
     <string name="home_tasks_option">Tasks</string>
     <string name="view_task_arrow">View Task</string>
     <string name="logout_off_app">Logout</string>
+    <string name="action_search">Search</string>
+    <string name="account_settings">My Profile</string>
+    <string name="a_o_b">A.O.B</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="save">Save</string>
+    <string name="change_password">Change Password</string>
+
+    <!-- Firebase Database Nodes -->
+    <string name="dbnode_users">users</string>
 
 </resources>
 

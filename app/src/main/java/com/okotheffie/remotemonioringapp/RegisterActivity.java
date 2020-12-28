@@ -18,16 +18,20 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.okotheffie.remotemonioringapp.models.User;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -94,7 +98,7 @@ public class RegisterActivity extends AppCompatActivity {
         mTextViewLoginLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(RegisterActivity.this, LoginAcivity.class);
+                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                 emptyInputEditText();
@@ -127,65 +131,70 @@ public class RegisterActivity extends AppCompatActivity {
     public void registerNewEmail(final String email, String password){
 
         showDialog();
-        mAuth = FirebaseAuth.getInstance();
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-                    Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
-                    if (task.isSuccessful()){
-                        Log.d(TAG, "onComplete: AuthState: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete( Task<AuthResult> task) {
+                        Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
-                        sendVerificationEmail();
+                        if (task.isSuccessful()){
+                            Log.d(TAG, "onComplete: AuthState: " + FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                        // Create a User object
-                        userID = mAuth.getCurrentUser().getUid();
-                        FirebaseFirestore fstore = FirebaseFirestore.getInstance();
-                        DocumentReference documentReference = fstore.collection("users").document(userID);
+                            sendVerificationEmail();
 
-                        Map<String, Object> user = new HashMap<>();
-                        user.put("firstname",mFirstName.getText().toString().trim().toLowerCase());
-                        user.put("lastname",mLastName.getText().toString().trim().toLowerCase());
-                        user.put("email",FirebaseAuth.getInstance().getCurrentUser().getEmail());
-                        user.put("contactnumber",mContactNo.getText().toString().toLowerCase());
-                        user.put("username",mUserName.getText().toString().toLowerCase());
-                        user.put("user_id",FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            // Create a User object
+                            User user = new User();
+                            user.setFirstname(Objects.requireNonNull(mFirstName.getText()).toString());
+                            user.setLastname(Objects.requireNonNull(mLastName.getText()).toString());
+                            user.setEmail(Objects.requireNonNull(mEmail.getText()).toString());
+                            user.setContactnumber(Objects.requireNonNull(mContactNo.getText()).toString());
+                            user.setUsername(Objects.requireNonNull(mUserName.getText()).toString());
+                            user.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            user.setProfile_image("");
+                            user.setSecurity_level("");
 
-                        documentReference.set(user).addOnSuccessListener(aVoid -> {
-                            Log.d(TAG, "onSuccess: user profile is created for" + userID);
-                            FirebaseAuth.getInstance().signOut();
-                            redirectLoginScreen();
+                            Log.d(TAG,"user: " + user.toString());
 
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.d(TAG, "onFailure: " + e.toString());
-                            }
-                        });
-                    }
-                    if (!task.isSuccessful()) {
-                        try{
-                            throw task.getException();
-                            //if user enters weak Password
-                        } catch (FirebaseAuthWeakPasswordException weakPassword) {
-                            Log.d(TAG,"onComplete: Weak Password");
-                            Toast.makeText(RegisterActivity.this, "Weak Password, Kindly try a Stronger Password", Toast.LENGTH_SHORT).show();
-
-                        } catch (FirebaseAuthInvalidCredentialsException malformedEmail) {
-                            Log.d(TAG,"onComplete: malformedEmail");
-                            Toast.makeText(RegisterActivity.this, "Malformed Email,The email you entered don't conform to a standard type ", Toast.LENGTH_SHORT).show();
-
-                        } catch (FirebaseAuthUserCollisionException existEmail) {
-                            Log.d(TAG,"onComplete: Email already Exists");
-                            Toast.makeText(RegisterActivity.this, "The email entered already exists ", Toast.LENGTH_SHORT).show();
-
-                        } catch (Exception e) {
-                            Log.d(TAG,"onComplete: " + e.getMessage());
+                            FirebaseDatabase.getInstance().getReference()
+                                    .child(getString(R.string.dbnode_users))
+                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    FirebaseAuth.getInstance().signOut();
+                                    redirectLoginScreen();
+                                    Toast.makeText(RegisterActivity.this, "Please confirm your Verification in your Email", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
+                        if (!task.isSuccessful()) {
+                            try{
+
+                                throw task.getException();
+
+                                //if user enters weak Password
+                            } catch (FirebaseAuthWeakPasswordException weakPassword) {
+                                Log.d(TAG,"onComplete: Weak Password");
+                                Toast.makeText(RegisterActivity.this, "Weak Password, Kindly try a Stronger Password", Toast.LENGTH_SHORT).show();
+
+                            } catch (FirebaseAuthInvalidCredentialsException malformedEmail) {
+                                Log.d(TAG,"onComplete: malformedEmail");
+                                Toast.makeText(RegisterActivity.this, "Malformed Email,The email you entered don't conform to a standard type ", Toast.LENGTH_SHORT).show();
+
+                            } catch (FirebaseAuthUserCollisionException existEmail) {
+                                Log.d(TAG,"onComplete: Email already Exists");
+                                Toast.makeText(RegisterActivity.this, "The email entered already exists ", Toast.LENGTH_SHORT).show();
+
+                            } catch (Exception e) {
+                                Log.d(TAG,"onComplete: " + e.getMessage());
+                            }
+                        }
+                        hideDialog();
+                        // ...
                     }
-                    hideDialog();
                 });
-    }
-    private void sendVerificationEmail(){
+    }    private void sendVerificationEmail(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null){
             user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -240,7 +249,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void redirectLoginScreen(){
         Log.d(TAG, "redirectLoginScreen: redirecting to login screen.");
 
-        Intent intent = new Intent(RegisterActivity.this, LoginAcivity.class);
+        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
         startActivity(intent);
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         emptyInputEditText();

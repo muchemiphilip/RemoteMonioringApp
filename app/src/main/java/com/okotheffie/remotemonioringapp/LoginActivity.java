@@ -23,7 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 
-public class LoginAcivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
 
@@ -61,7 +61,7 @@ public class LoginAcivity extends AppCompatActivity {
                         .addOnCompleteListener((Task<AuthResult> task) -> {
 
                             if (task.isSuccessful()) {
-                                Toast.makeText(LoginAcivity.this, "Authenticated", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this, "Authenticated", Toast.LENGTH_SHORT).show();
                                 hideDialog();
                             }
                             if (!task.isSuccessful()) {
@@ -72,11 +72,11 @@ public class LoginAcivity extends AppCompatActivity {
                                     //if user enters wrong Email
                                 } catch (FirebaseAuthInvalidUserException invalidEmail) {
                                     Log.d(TAG, "onComplete: invalid Email");
-                                    Toast.makeText(LoginAcivity.this, "The email you entered doesn't conform to a standard type", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(LoginActivity.this, "The email you entered doesn't conform to a standard type", Toast.LENGTH_SHORT).show();
 
                                 } catch (FirebaseAuthInvalidCredentialsException wrongPassword) {
                                     Log.d(TAG, "onComplete: malformedEmail");
-                                    Toast.makeText(LoginAcivity.this, "Wrong Password!!! ", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(LoginActivity.this, "Wrong Password!!! ", Toast.LENGTH_SHORT).show();
 
 
                                 } catch (Exception e) {
@@ -90,7 +90,7 @@ public class LoginAcivity extends AppCompatActivity {
         mRegisterLink.setOnClickListener(v -> {
             Log.d(TAG, "onClick: Navigating to Register page.");
 
-            Intent intentRegister = new Intent(LoginAcivity.this,RegisterActivity.class);
+            Intent intentRegister = new Intent(LoginActivity.this,RegisterActivity.class);
             startActivity(intentRegister);
             overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
             emptyInputEditText();
@@ -160,14 +160,14 @@ public class LoginAcivity extends AppCompatActivity {
 
                 if (user.isEmailVerified()) {
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                    Toast.makeText(LoginAcivity.this, "Authenticated with: " + user.getEmail(),
+                    Toast.makeText(LoginActivity.this, "Authenticated with: " + user.getEmail(),
                             Toast.LENGTH_SHORT).show();
 
-                    Intent intent = new  Intent(LoginAcivity.this, MainActivity.class);
+                    Intent intent = new  Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                 } else {
-                    Toast.makeText(LoginAcivity.this, "Check your Email for a Verification Link" ,
+                    Toast.makeText(LoginActivity.this, "Check your Email for a Verification Link" ,
                             Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                     FirebaseAuth.getInstance().signOut();
