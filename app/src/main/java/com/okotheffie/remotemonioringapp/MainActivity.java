@@ -34,18 +34,17 @@ public class MainActivity extends AppCompatActivity  {
     private FirebaseAuth.AuthStateListener mAuthListener;
     //widgets
     Toolbar toolbar;
-    //vars
-    private int mExitCount = 0;
-
     TabLayout tabLayout;
     ViewPager viewPager;
     ViewPagerAdapter viewPagerAdapter;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
+
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         viewPager = findViewById(R.id.viewPager);
@@ -57,6 +56,7 @@ public class MainActivity extends AppCompatActivity  {
         setupFirebaseAuth();
         setUserDetails();
     }
+
     //Override methods
     @Override
     protected void onResume() {
@@ -73,16 +73,16 @@ public class MainActivity extends AppCompatActivity  {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
 
-//            case R.id.action_search:
-//                Log.d(TAG,"optionChat: Navigating to Messages Activity");
-//                Intent toChatsActivity = new Intent(MainActivity.this, MessagesActivity.class);
-//                startActivity(toChatsActivity);
-//                return true;
-
             case R.id.optionAccountSettings:
                 Log.d(TAG,"optionAccountSettings: Navigating to Settings Activity");
                 Intent toAccountSettings = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(toAccountSettings);
+                return true;
+
+            case R.id.optionAnyOtherBusiness:
+//                Log.d(TAG,"optionAccountSettings: Navigating to Settings Activity");
+//                Intent toAssignTaskActivity = new Intent(MainActivity.this, AssignTaskActivity.class);
+//                startActivity(toAssignTaskActivity);
                 return true;
 
             case R.id.optionSignOut:
@@ -140,7 +140,6 @@ public class MainActivity extends AppCompatActivity  {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     User user_properties = snapshot.getValue(User.class);
-                    Log.d(TAG,"getUserDetails: properties: \n" + user_properties.toString());
                 }
 
                 @Override

@@ -16,6 +16,12 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    packagingOptions{
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
+        exclude 'META-INF/NOTICE'
+
+    }
 
     buildTypes {
         release {
@@ -43,8 +49,8 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:26.1.1')
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-auth:20.0.1'
-    implementation 'com.google.firebase:firebase-database:19.5.1'
-    implementation 'com.google.firebase:firebase-storage:19.2.0'
+    implementation 'com.google.firebase:firebase-database:19.6.0'
+    implementation 'com.google.firebase:firebase-storage:19.2.1'
     implementation 'com.firebaseui:firebase-ui-database:6.3.0'
 
 }

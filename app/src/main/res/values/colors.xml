@@ -17,6 +17,8 @@
     <color name="milk_white">#fefcff</color>
     <color name="company_color">#03A9F4</color>
     <color name="slightly_gray">#ececec</color>
+    <color name="border_line_grey">#DCDCDC</color>
+    <color name="gray_dolphin">#5c5858</color>
 
 
 </resources>

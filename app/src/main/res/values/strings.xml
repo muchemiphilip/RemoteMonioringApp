@@ -31,9 +31,8 @@
     <string name="resend_verification_email">Resend Verification Code</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
-    <string name="employee_dashboard">EMPLOYEE DASHBOARD</string>
 
-    <string name="default_time_of_day">Good Morning</string>
+    <string name="default_time_of_day">Welcome on Board</string>
     <string name="default_user_name">Effie Okoth</string>
     <string name="tasks_to_complete">Tasks to complete</string>
     <string name="home_tasks_option">Tasks</string>
@@ -46,8 +45,34 @@
     <string name="save">Save</string>
     <string name="change_password">Change Password</string>
 
+    <!-- Dialog Messages -->
+    <string name="first_time_user_message">
+        Hey Champ!!, I noticed this is your first login.
+        Welcome to SmartFarm App, where we instill the best knowledge about farming to ambitious farmers..
+        we will make your experience unforgetable.
+    </string>
+
     <!-- Firebase Database Nodes -->
     <string name="dbnode_users">users</string>
+    <string name="dbnode_task">task</string>
+
+    <string name="task_type">Task Type</string>
+    <string name="assigned_task">Assigned Task</string>
+    <string name="assigned_by">Assigned By</string>
+    <string name="default_task_id">Task Id: id1234567</string>
+    <string name="default_date_time">Mon, Jan 1, 1969, 8:00 AM</string>
+    <string name="accept_task">Accept</string>
+    <string name="decline_task">Decline</string>
+    <string name="complete_task">Complete</string>
+    <string name="daily_tasks">Daily Tasks</string>
+    <string name="employee_email">Employee Email</string>
+    <string name="task_todo">Task to complete</string>
+    <string name="task_description">Task Description</string>
+    <string name="default_due_date_time">Due by: Mon, Jan 1, 1969 1:00 PM</string>
+    <string name="task_due_date">Set Due Date</string>
+    <string name="assign_task">Assign</string>
+    <string name="action_add">Add</string>
+
 
 </resources>
 
